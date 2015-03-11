@@ -1,0 +1,73 @@
+local Add, parent = torch.class('nn.Add2D', 'nn.Module')
+
+function Add:__init(inputSize,scalar)
+   parent.__init(self)
+  
+   local size = inputSize
+   if scalar then size=1 end
+   self.bias = torch.Tensor(size)
+   self.gradBias = torch.Tensor(size)
+     
+   -- state
+   self.gradInput:resize(inputSize)
+   self.output:resize(inputSize) 
+
+   self:reset()
+end
+
+function Add:reset(stdv)
+   if stdv then 
+      stdv = stdv * math.sqrt(3)
+   else
+      stdv = 1./math.sqrt(self.bias:size(1))
+   end
+
+   for i=1,self.bias:size(1) do
+      self.bias[i] = torch.uniform(-stdv, stdv)
+   end
+end
+
+function Add:updateOutput(input)
+   if input:dim() == 2 then
+      local nframe = input:size()[1]
+      local nunit = self.bias:size()[1]
+      self.output:resize(nframe, nunit);
+      local bias  = self.bias:reshape(1, self.output:size()[2])
+
+       self.output:copy(input);
+       self.output:add(bias:expandAs(self.output))
+   else
+      if self.gradBias:size(1)==1 then
+        self.output:add(self.bias[1]);
+      else
+        self.output:add(self.bias);
+      end
+   end
+   return self.output
+end 
+
+function Add:updateGradInput(input, gradOutput)
+   if self.gradInput then
+      local nElement = self.gradInput:nElement()
+      self.gradInput:resizeAs(input)
+      if self.gradInput:nElement() ~= nElement then
+         self.gradInput:zero()
+      end
+      self.gradInput:copy(gradOutput) 
+         
+    return self.gradInput
+   end
+end
+
+function Add:accGradParameters(input, gradOutput, scale)
+   scale = scale or 1
+   if self.gradBias:size(1) == 1 then
+      self.gradBias[1] = self.gradBias[1] + scale*gradOutput:sum();
+   else
+      if gradOutput:dim() == 1 then
+         self.gradBias:add(scale, gradOutput)
+      else
+         self.gradBias:add(scale, gradOutput:sum(1):reshape(self.gradBias:size()[1]))
+      end
+   end
+end
