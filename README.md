@@ -20,3 +20,5 @@ luajit do-train.lua run_configs/conf_01.lua
 ```bash
 luajit do-measure.lua run_configs/conf_01.lua
 ```
+
+A pretrained configuration with the l2_interaction model is available at l2_interaction_config.lua
