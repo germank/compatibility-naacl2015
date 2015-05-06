@@ -22,3 +22,12 @@ luajit do-measure.lua run_configs/conf_01.lua
 ```
 
 A pretrained configuration with the l2_interaction model is available at l2_interaction_config.lua
+
+## Troubleshooting
+
+### When I run the script, I get "luajit: do-train.lua:6: module 'models' not found:"
+
+You need to add "./?/init.lua" to your LUA_PATH. One simple way of doing so is copy-pasting this command in your terminal:
+
+    `echo "export LUA_PATH=$(luajit -e 'print(package.path)');./?/init.lua"`
+
