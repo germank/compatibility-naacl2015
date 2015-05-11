@@ -1,6 +1,6 @@
 # Compatibility Models
 The description of these models will be published in the proceedings of NAACL 2015 under
-the title "So similar and yet incompatible: Toward the automated identification of semantically compatible words"
+the title "[So similar and yet incompatible: Toward the automated identification of semantically compatible words](http://clic.cimec.unitn.it/marco/publications/kruszewski-baroni-compatibility-naacl-2015.pdf)"
 
 ## Requirements
 [Torch7](http://torch.ch/)
